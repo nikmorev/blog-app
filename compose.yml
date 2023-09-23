@@ -1,28 +1,32 @@
 version: "3.6"
 services:
 
-  app:
-    image: blog-app-image
-    build:
-      context: .
-      dockerfile: app/app.Dockerfile
-    ports:
-      - "${APP_PORT:-9000?External Web App Port}:80"
-    command: ${APP_START_COMMAND:"npm run build && npm run start"?Command to start and app}
-    env_file: ./app/.env
-    expose:
-      - "80"
-    links:
-      - "database:postgresql"
-    restart: unless-stoped
+  # app:
+  #   image: blog-app-image
+  #   build:
+  #     context: .
+  #     dockerfile: app/app.Dockerfile
+  #   ports:
+  #     - "${APP_PORT:-9000?External Web App Port}:80"
+  #   command: ${APP_START_COMMAND:"npm run build && npm run start"?Command to start and app}
+  #   env_file: ./app/.env
+  #   expose:
+  #     - "80"
+  #   links:
+  #     - "database:postgresql"
+  #   restart: unless-stoped
     
   database:
     image: blog-database-image
     build:
       context: .
       dockerfile: database/database.Dockerfile
+    environment:
+      - POSTGRES_USER=${DB_USER?Database user}
+      - POSTGRES_PASSWORD=${DB_PASSWORD?Database password}
+      - POSTGRES_DB=${DB_NAME?Database name}
     ports:
-      - "${DATABSE_PORT:-9001?External Web App Port}:5432"
+      - "${DB_PORT:-9001?External Web App Db Port}:5432"
     expose:
       - "5432"
-    restart: unless-stoped
+    restart: unless-stopped
